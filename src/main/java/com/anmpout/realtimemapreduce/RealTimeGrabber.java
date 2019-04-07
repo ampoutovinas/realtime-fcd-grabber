@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -88,36 +89,46 @@ Timer timer = new Timer();
     private void parseResposeAndSaveData(String toString) throws IOException {
        long unixTimestamp  = System.currentTimeMillis() / 1000L;
        long bucket =  unixTimestamp - (unixTimestamp % 3600);
-      String dateDir = createDirectoryOptional();
 
-        String csvFile = "/home/cloudera/Downloads/realTime/"+dateDir;
-         //String csvFile = "/home/cloudera/Downloads/realTime/"+dateDir+"/"+String.valueOf(bucket);
 
-        FileWriter writer = new FileWriter(csvFile,true);
+        FileWriter writer = null;
         JSONArray jSONArray = new JSONArray(toString);
         for(int i=0;i<jSONArray.length();i++){
             JSONObject jSONObject = new JSONObject(jSONArray.get(i).toString());
             List<String> rowElements = new ArrayList<>();
+            
             rowElements.add(jSONObject.optString("recorded_timestamp", ""));
             rowElements.add(jSONObject.optString("lon", ""));
             rowElements.add(jSONObject.optString("lat", ""));
             rowElements.add(jSONObject.optString("altitude", ""));
             rowElements.add(jSONObject.optString("speed", ""));
             rowElements.add(jSONObject.optString("orientation", ""));
-        CSVUtils.writeLine(writer, rowElements);
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    Date date;
+      long unixTime = 0;
             
+     try {
+         date = dateFormat.parse(jSONObject.optString("recorded_timestamp", ""));
+     }catch(Exception ex){
+         continue;
+     
+     }
+        String dateDir = createDirectoryOptional(date);
+        String csvFile = "/home/cloudera/Downloads/realTime/"+dateDir;
+         writer = new FileWriter(csvFile,true);
+        CSVUtils.writeLine(writer, rowElements);
+         writer.flush();   
         }
         
 
-        writer.flush();
+        
         writer.close(); 
     }
     
       long unixTimestamp  = System.currentTimeMillis() / 1000L;
 
-    private String createDirectoryOptional() {
-       Date myDate = new Date();
-        System.out.println(new SimpleDateFormat("HH").format(myDate));
+    private String createDirectoryOptional(Date myDate) {      
+       // System.out.println(new SimpleDateFormat("HH").format(myDate));
        String dateDir = new SimpleDateFormat("yyyy-MM-dd").format(myDate);
              String directoryName ="/home/cloudera/Downloads/realTime/"+dateDir;
     File directory = new File(directoryName);
