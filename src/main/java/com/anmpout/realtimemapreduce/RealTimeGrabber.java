@@ -137,7 +137,7 @@ Timer timer = new Timer();
         // If you require it to make the entire directory path including parents,
         // use directory.mkdirs(); here instead.
     } 
-    return dateDir+"/"+new SimpleDateFormat("HH").format(myDate)+"/" ; 
+    return dateDir+"/"+new SimpleDateFormat("H").format(myDate)+"/" ; 
     
     }
 }
