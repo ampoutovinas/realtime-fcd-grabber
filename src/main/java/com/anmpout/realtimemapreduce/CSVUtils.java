@@ -1,32 +1,19 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.anmpout.realtimemapreduce;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
-/**
- *
- * @author cloudera
- */
 public class CSVUtils {
 
-    private static final char DEFAULT_SEPARATOR = '\t';
+    private static final char DS= '\t';
     
     public static void writeLine(Writer w, List<String> values) throws IOException {
-        writeLine(w, values, DEFAULT_SEPARATOR, ' ');
+        writeLine(w, values, DS, ' ');
     }
 
-    public static void writeLine(Writer w, List<String> values, char separators) throws IOException {
-        writeLine(w, values, separators, ' ');
-    }
-
-    //https://tools.ietf.org/html/rfc4180
-    private static String followCVSformat(String value) {
+    private static String followformat(String value) {
 
         String result = value;
         if (result.contains("\"")) {
@@ -39,11 +26,8 @@ public class CSVUtils {
     public static void writeLine(Writer w, List<String> values, char separators, char customQuote) throws IOException {
 
         boolean first = true;
-
-        //default customQuote is empty
-
         if (separators == ' ') {
-            separators = DEFAULT_SEPARATOR;
+            separators = DS;
         }
 
         StringBuilder sb = new StringBuilder();
@@ -52,9 +36,9 @@ public class CSVUtils {
                 sb.append(separators);
             }
             if (customQuote == ' ') {
-                sb.append(followCVSformat(value));
+                sb.append(followformat(value));
             } else {
-                sb.append(customQuote).append(followCVSformat(value)).append(customQuote);
+                sb.append(customQuote).append(followformat(value)).append(customQuote);
             }
 
             first = false;
